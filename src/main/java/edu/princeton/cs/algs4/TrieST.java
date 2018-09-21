@@ -18,8 +18,6 @@
  *
  ******************************************************************************/
 
-package edu.princeton.cs.algs4;
-
 /**
  *  The {@code TrieST} class represents an symbol table of key-value
  *  pairs, with string keys and generic values.
@@ -48,9 +46,10 @@ package edu.princeton.cs.algs4;
  *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
  */
 public class TrieST<Value> {
-    private static final int R = 256;        // extended ASCII
 
-
+    // defining a constant that tells us how big our array will be
+    //defining a RADIX
+    private static final int R = 256;   // extended ASCII
     private Node root;      // root of trie
     private int n;          // number of keys in trie
 
@@ -75,9 +74,13 @@ public class TrieST<Value> {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public Value get(String key) {
-        if (key == null) throw new IllegalArgumentException("argument to get() is null");
-        Node x = get(root, key, 0);
-        if (x == null) return null;
+        if (key == null) {
+            throw new IllegalArgumentException("argument to get() is null");
+        }   // exception if you try to find a NULL
+        Node x = get(root, key, 0); // calling a private method
+        if (x == null) {
+            return null;
+        }
         return (Value) x.val;
     }
 
@@ -89,13 +92,27 @@ public class TrieST<Value> {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public boolean contains(String key) {
-        if (key == null) throw new IllegalArgumentException("argument to contains() is null");
+        // chack whether the key exists
+        if (key == null) {
+            throw new IllegalArgumentException("argument to contains() is null");
+        }
+
+        // check whether we have the key or not
+        // returns boolean
         return get(key) != null;
     }
 
     private Node get(Node x, String key, int d) {
-        if (x == null) return null;
-        if (d == key.length()) return x;
+        // check whethere node is null
+        // it doesn't exist, return null
+        if (x == null) {
+            return null;
+        }
+
+        // if we reached the end, return the node
+        if (d == key.length()) {
+            return x;
+        }
         char c = key.charAt(d);
         return get(x.next[c], key, d+1);
     }
@@ -109,20 +126,30 @@ public class TrieST<Value> {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public void put(String key, Value val) {
-        if (key == null) throw new IllegalArgumentException("first argument to put() is null");
-        if (val == null) delete(key);
-        else root = put(root, key, val, 0);
+        if (key == null) {
+            throw new IllegalArgumentException("first argument to put() is null");
+        }
+        if (val == null) {
+            delete(key); // chars are still here, but it is not considered to be a word
+        }
+        else root = put(root, key, val,0); // calling the private method
     }
 
+
     private Node put(Node x, String key, Value val, int d) {
-        if (x == null) x = new Node();
+        // if the node does not exist, create a new one
+        if (x == null) {
+            x = new Node();
+        }
         if (d == key.length()) {
-            if (x.val == null) n++;
-            x.val = val;
+            if (x.val == null) {
+                n++;    // increase the number of keys stored in the
+            }
+            x.val = val;    // rewrites the value if you pass the same key twice?
             return x;
         }
-        char c = key.charAt(d);
-        x.next[c] = put(x.next[c], key, val, d+1);
+        char c = key.charAt(d); // characher of key in order
+        x.next[c] = put(x.next[c], key, val, d+1);  // using recursion
         return x;
     }
 
@@ -243,15 +270,23 @@ public class TrieST<Value> {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public void delete(String key) {
-        if (key == null) throw new IllegalArgumentException("argument to delete() is null");
+        // check if the key exists
+        if (key == null) {
+            throw new IllegalArgumentException("argument to delete() is null");
+        }
         root = delete(root, key, 0);
     }
 
     private Node delete(Node x, String key, int d) {
-        if (x == null) return null;
+        // if the node we are looking for doesn't exist, nothing to delete here
+        if (x == null) {
+            return null;
+        }
         if (d == key.length()) {
-            if (x.val != null) n--;
-            x.val = null;
+            if (x.val != null) {
+                n--;    // decrease the size
+            }
+            x.val = null;   // doesn't delete the node, deletes the value
         }
         else {
             char c = key.charAt(d);
@@ -259,10 +294,13 @@ public class TrieST<Value> {
         }
 
         // remove subtrie rooted at x if it is completely empty
-        if (x.val != null) return x;
+        if (x.val != null) {
+            return x;
+        }
         for (int c = 0; c < R; c++)
-            if (x.next[c] != null)
+            if (x.next[c] != null) {
                 return x;
+            }
         return null;
     }
 
@@ -289,6 +327,7 @@ public class TrieST<Value> {
             StdOut.println();
         }
 
+        // how many prefixes we can find in the trie
         StdOut.println("longestPrefixOf(\"shellsort\"):");
         StdOut.println(st.longestPrefixOf("shellsort"));
         StdOut.println();
@@ -307,27 +346,3 @@ public class TrieST<Value> {
             StdOut.println(s);
     }
 }
-
-/******************************************************************************
- *  Copyright 2002-2018, Robert Sedgewick and Kevin Wayne.
- *
- *  This file is part of algs4.jar, which accompanies the textbook
- *
- *      Algorithms, 4th edition by Robert Sedgewick and Kevin Wayne,
- *      Addison-Wesley Professional, 2011, ISBN 0-321-57351-X.
- *      http://algs4.cs.princeton.edu
- *
- *
- *  algs4.jar is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  algs4.jar is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with algs4.jar.  If not, see http://www.gnu.org/licenses.
- ******************************************************************************/
